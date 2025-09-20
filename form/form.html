@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Customer Feedback Form</title>
+  <title>Customer Feedback System</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
   <style>
     * {
@@ -19,6 +19,95 @@
       line-height: 1.6;
     }
 
+    /* Cover Page Styles */
+    .cover-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+
+    .cover-content {
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+    }
+
+    .cover-header {
+      margin-bottom: 48px;
+      color: white;
+    }
+
+    .cover-header h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .cover-header p {
+      font-size: 18px;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+
+    .options-container {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .option-card {
+      background: white;
+      padding: 32px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .option-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-color: #667eea;
+    }
+
+    .option-card .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feedback-option .icon {
+      color: #059669;
+    }
+
+    .dashboard-option .icon {
+      color: #3b82f6;
+    }
+
+    .option-card h3 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .option-card p {
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .cover-footer {
+      color: white;
+      opacity: 0.8;
+      font-size: 14px;
+    }
+
     /* Form Container */
     .form-container {
       background: #ffffff;
@@ -29,6 +118,11 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       border: 1px solid #e5e7eb;
       margin: 20px auto;
+      display: none;
+    }
+
+    .form-container.show {
+      display: block;
     }
 
     .form-header {
@@ -354,6 +448,14 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+      .cover-header h1 {
+        font-size: 32px;
+      }
+      
+      .cover-header p {
+        font-size: 16px;
+      }
+      
       .dashboard-charts {
         grid-template-columns: 1fr;
       }
@@ -374,6 +476,34 @@
   </style>
 </head>
 <body>
+  <!-- Cover Page -->
+  <div class="cover-container" id="coverContainer">
+    <div class="cover-content">
+      <div class="cover-header">
+        <h1>Customer Feedback</h1>
+        <p>Your voice matters. Help us improve our services by sharing your experience or review customer insights.</p>
+      </div>
+
+      <div class="options-container">
+        <div class="option-card feedback-option" onclick="showFeedbackForm()">
+          <span class="icon">📝</span>
+          <h3>Submit Feedback</h3>
+          <p>Share your thoughts and help us improve our products and services</p>
+        </div>
+
+        <div class="option-card dashboard-option" onclick="showAdminDashboard()">
+          <span class="icon">📊</span>
+          <h3>View Admin Dashboard</h3>
+          <p>Access analytics and insights from customer feedback submissions</p>
+        </div>
+      </div>
+
+      <div class="cover-footer">
+        <p>Choose an option above to continue</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Form Container -->
   <div class="form-container" id="formContainer">
     <div class="form-header">
@@ -434,12 +564,13 @@
       </div>
 
       <button type="submit" class="submit-btn">Submit Feedback</button>
+      <button type="button" class="back-btn" onclick="showCover()">Back to Home</button>
     </form>
 
     <div class="thank-you" id="thankYou">
       <h3>Thank You!</h3>
       <p>Your feedback has been submitted successfully. We appreciate your time and will use your input to improve our services.</p>
-      <button type="button" class="dashboard-btn" onclick="showDashboard()">Go to Dashboard</button>
+      <button type="button" class="back-btn" onclick="showCover()">Back to Home</button>
     </div>
   </div>
 
@@ -448,7 +579,7 @@
     <div class="dashboard-header">
       <h2>Feedback Dashboard</h2>
       <p>Analytics and insights from customer feedback</p>
-      <button type="button" class="back-btn" onclick="showForm()">Back to Form</button>
+      <button type="button" class="back-btn" onclick="showCover()">Back to Home</button>
     </div>
 
     <div class="dashboard-stats">
@@ -509,326 +640,228 @@
     </div>
   </div>
 
-  <script>
-    // Start with empty feedback data - your submissions will appear here
-    let feedbackData = [];
+<script>
+  // Start with empty feedback data
+  let feedbackData = [];
 
-    // Check if localStorage is available (works in actual websites, not in Claude artifacts)
-    function isLocalStorageAvailable() {
-      try {
-        const test = '__localStorage_test__';
-        localStorage.setItem(test, test);
-        localStorage.removeItem(test);
-        return true;
-      } catch (e) {
-        return false;
-      }
+  // Check if localStorage is available
+  function isLocalStorageAvailable() {
+    try {
+      const test = '__localStorage_test__';
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+    } catch (e) {
+      return false;
     }
+  }
 
-    // Load existing feedback from localStorage (if available)
-    function loadFeedbackData() {
-      if (isLocalStorageAvailable()) {
-        const saved = localStorage.getItem('customerFeedbackData');
-        if (saved) {
-          try {
-            feedbackData = JSON.parse(saved);
-            console.log('Loaded', feedbackData.length, 'saved feedback entries');
-          } catch (e) {
-            console.error('Error loading saved feedback data:', e);
-            feedbackData = [];
-          }
-        }
-      } else {
-        // Fallback: Add some sample data to demonstrate persistence
-        // In a real website environment, this wouldn't be needed
-        feedbackData = [
-          { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
-        ];
-        console.log('localStorage not available - using demo data');
-      }
-    }
-
-    // Save feedback data to localStorage (if available)
-    function saveFeedbackData() {
-      if (isLocalStorageAvailable()) {
+  // Load existing feedback from localStorage
+  function loadFeedbackData() {
+    if (isLocalStorageAvailable()) {
+      const saved = localStorage.getItem('customerFeedbackData');
+      if (saved) {
         try {
-          localStorage.setItem('customerFeedbackData', JSON.stringify(feedbackData));
-          console.log('Feedback data saved to localStorage');
+          feedbackData = JSON.parse(saved);
         } catch (e) {
-          console.error('Error saving feedback data:', e);
+          console.error('Error loading saved feedback data:', e);
+          feedbackData = [];
         }
-      } else {
-        console.log('localStorage not available - data will not persist on refresh');
+      }
+    } else {
+      feedbackData = [
+        { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
+      ];
+    }
+  }
+
+  // Save feedback data to localStorage
+  function saveFeedbackData() {
+    if (isLocalStorageAvailable()) {
+      try {
+        localStorage.setItem('customerFeedbackData', JSON.stringify(feedbackData));
+      } catch (e) {
+        console.error('Error saving feedback data:', e);
       }
     }
+  }
 
-    // Initialize data on page load
-    loadFeedbackData();
+  loadFeedbackData();
 
-    // Star rating functionality
-    const stars = document.querySelectorAll('.star-rating input');
-    const starLabels = document.querySelectorAll('.star-rating label');
-    const ratingText = document.getElementById('ratingText');
-    
-    const ratingTexts = {
-      '1': 'Poor',
-      '2': 'Fair', 
-      '3': 'Good',
-      '4': 'Very Good',
-      '5': 'Excellent'
-    };
+  // Navigation
+  function showCover() {
+    document.getElementById('coverContainer').style.display = 'flex';
+    document.getElementById('formContainer').classList.remove('show');
+    document.getElementById('dashboardContainer').classList.remove('show');
 
-    stars.forEach((star, index) => {
-      star.addEventListener('change', (e) => {
-        const rating = parseInt(e.target.value);
-        updateStars(rating);
-        ratingText.textContent = ratingTexts[rating];
-        ratingText.classList.add('show');
-      });
-    });
+    const form = document.getElementById('feedbackForm');
+    const thankYou = document.getElementById('thankYou');
+    form.style.display = 'block';
+    thankYou.classList.remove('show');
+    form.reset();
+    document.getElementById('ratingText').textContent = 'Click to rate';
+    updateStars(0);
+  }
 
-    starLabels.forEach((label, index) => {
-      label.addEventListener('mouseenter', () => {
-        const rating = index + 1;
-        updateStars(rating);
-      });
-    });
+  function showFeedbackForm() {
+    document.getElementById('coverContainer').style.display = 'none';
+    document.getElementById('formContainer').classList.add('show');
+    document.getElementById('dashboardContainer').classList.remove('show');
+  }
 
-    document.querySelector('.star-rating').addEventListener('mouseleave', () => {
-      const checkedStar = document.querySelector('.star-rating input:checked');
-      if (checkedStar) {
-        updateStars(parseInt(checkedStar.value));
-      } else {
-        updateStars(0);
-      }
-    });
-
-    function updateStars(rating) {
-      starLabels.forEach((label, index) => {
-        if (index < rating) {
-          label.style.color = '#fbbf24';
-        } else {
-          label.style.color = '#e5e7eb';
-        }
-      });
-    }
-
-    // Form submission
-    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Get form data
-      const formData = new FormData(this);
-      const newFeedback = {
-        name: formData.get('name'),
-        email: formData.get('email'),
-        type: formData.get('type'),
-        rating: parseInt(formData.get('rating')),
-        message: formData.get('message'),
-        date: new Date().toISOString().split('T')[0],
-        sentiment: getSentiment(parseInt(formData.get('rating')))
-      };
-      
-      // Add to feedback data
-      feedbackData.unshift(newFeedback);
-      
-      // Save to localStorage
-      saveFeedbackData();
-      
-      // Show thank you message
-      this.style.display = 'none';
-      document.getElementById('thankYou').classList.add('show');
-    });
-
-    function getSentiment(rating) {
-      if (rating >= 4) return 'positive';
-      if (rating <= 2) return 'negative';
-      return 'neutral';
-    }
-
-    function showDashboard() {
-      document.getElementById('formContainer').style.display = 'none';
-      document.getElementById('dashboardContainer').classList.add('show');
-      updateDashboard();
-      updatePersistenceStatus();
-    }
-
-    function showForm() {
-      document.getElementById('dashboardContainer').classList.remove('show');
-      document.getElementById('formContainer').style.display = 'block';
-      document.getElementById('feedbackForm').style.display = 'block';
-      document.getElementById('thankYou').classList.remove('show');
-      document.getElementById('feedbackForm').reset();
-      ratingText.classList.remove('show');
-      ratingText.textContent = 'Click to rate';
-      updateStars(0);
-    }
-
-    function updateDashboard() {
-      // Update stats
-      const total = feedbackData.length;
-      const positive = feedbackData.filter(f => f.sentiment === 'positive').length;
-      const negative = feedbackData.filter(f => f.sentiment === 'negative').length;
-      const neutral = feedbackData.filter(f => f.sentiment === 'neutral').length;
-
-      document.getElementById('totalFeedback').textContent = total;
-      document.getElementById('positiveFeedback').textContent = positive;
-      document.getElementById('negativeFeedback').textContent = negative;
-      document.getElementById('neutralFeedback').textContent = neutral;
-
-      // Update charts
-      updateSentimentChart(positive, negative, neutral);
-      updateTypeChart();
-      
-      // Update table
-      updateFeedbackTable();
-    }
-
-    function updateSentimentChart(positive, negative, neutral) {
-      const ctx = document.getElementById('sentimentChart').getContext('2d');
-      
-      // Clear any existing chart
-      Chart.getChart(ctx)?.destroy();
-      
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Positive', 'Negative', 'Neutral'],
-          datasets: [{
-            data: [positive, negative, neutral],
-            backgroundColor: ['#059669', '#dc2626', '#d97706'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }
-      });
-    }
-
-    function updateTypeChart() {
-      const typeCounts = {};
-      feedbackData.forEach(f => {
-        typeCounts[f.type] = (typeCounts[f.type] || 0) + 1;
-      });
-
-      const ctx = document.getElementById('typeChart').getContext('2d');
-      
-      // Clear any existing chart
-      Chart.getChart(ctx)?.destroy();
-      
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: Object.keys(typeCounts),
-          datasets: [{
-            label: 'Count',
-            data: Object.values(typeCounts),
-            backgroundColor: '#3b82f6',
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              ticks: {
-                stepSize: 1
-              }
-            }
-          }
-        }
-      });
-    }
-
-    function updateFeedbackTable() {
-      const tbody = document.getElementById('feedbackTableBody');
-      tbody.innerHTML = '';
-      
-      if (feedbackData.length === 0) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td colspan="6" style="text-align: center; color: #9ca3af; padding: 40px;">
-            No feedback submitted yet. Submit your first feedback to see it here!
-          </td>
-        `;
-        tbody.appendChild(row);
-        return;
-      }
-      
-      feedbackData.slice(0, 10).forEach(feedback => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${feedback.name}</td>
-          <td>${feedback.email}</td>
-          <td>${feedback.type}</td>
-          <td>${'★'.repeat(feedback.rating)}${'☆'.repeat(5-feedback.rating)}</td>
-          <td><span class="sentiment-badge sentiment-${feedback.sentiment}">${feedback.sentiment}</span></td>
-          <td>${feedback.date}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-
-    // Initialize dashboard on load
+  function showAdminDashboard() {
+    document.getElementById('coverContainer').style.display = 'none';
+    document.getElementById('formContainer').classList.remove('show');
+    document.getElementById('dashboardContainer').classList.add('show');
     updateDashboard();
+  }
 
-    // Clear all feedback data
-    function clearAllFeedback() {
-      if (confirm('Are you sure you want to clear all feedback data? This action cannot be undone.')) {
-        feedbackData = [];
-        saveFeedbackData();
-        updateDashboard();
-        console.log('All feedback data cleared');
-      }
+  // Star rating
+  const stars = document.querySelectorAll('.star-rating input');
+  const starLabels = document.querySelectorAll('.star-rating label');
+  const ratingText = document.getElementById('ratingText');
+
+  const ratingTexts = {
+    '1': 'Poor',
+    '2': 'Fair',
+    '3': 'Good',
+    '4': 'Very Good',
+    '5': 'Excellent'
+  };
+
+  stars.forEach((star, index) => {
+    star.addEventListener('change', (e) => {
+      const rating = parseInt(e.target.value);
+      updateStars(rating);
+      ratingText.textContent = ratingTexts[rating];
+      ratingText.classList.add('show');
+    });
+  });
+
+  starLabels.forEach((label, index) => {
+    label.addEventListener('mouseenter', () => {
+      updateStars(index + 1);
+    });
+  });
+
+  document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+    const checkedStar = document.querySelector('.star-rating input:checked');
+    updateStars(checkedStar ? parseInt(checkedStar.value) : 0);
+  });
+
+  function updateStars(rating) {
+    starLabels.forEach((label, index) => {
+      label.style.color = index < rating ? '#f39c12' : '#e1e8ed';
+    });
+  }
+
+  // Form submission
+  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const newFeedback = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      type: formData.get('type'),
+      rating: parseInt(formData.get('rating')),
+      message: formData.get('message'),
+      date: new Date().toISOString().split('T')[0],
+      sentiment: getSentiment(parseInt(formData.get('rating')))
+    };
+    feedbackData.unshift(newFeedback);
+    saveFeedbackData();
+    this.style.display = 'none';
+    document.getElementById('thankYou').classList.add('show');
+  });
+
+  function getSentiment(rating) {
+    if (rating >= 4) return 'positive';
+    if (rating <= 2) return 'negative';
+    return 'neutral';
+  }
+
+  function updateDashboard() {
+    const total = feedbackData.length;
+    const positive = feedbackData.filter(f => f.sentiment === 'positive').length;
+    const negative = feedbackData.filter(f => f.sentiment === 'negative').length;
+    const neutral = feedbackData.filter(f => f.sentiment === 'neutral').length;
+
+    document.getElementById('totalFeedback').textContent = total;
+    document.getElementById('positiveFeedback').textContent = positive;
+    document.getElementById('negativeFeedback').textContent = negative;
+    document.getElementById('neutralFeedback').textContent = neutral;
+
+    updateSentimentChart(positive, negative, neutral);
+    updateTypeChart();
+    updateFeedbackTable();
+  }
+
+  function updateSentimentChart(positive, negative, neutral) {
+    const ctx = document.getElementById('sentimentChart').getContext('2d');
+    Chart.getChart(ctx)?.destroy();
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels: ['Positive','Negative','Neutral'], datasets: [{ data: [positive, negative, neutral], backgroundColor: ['#27ae60','#e74c3c','#f39c12'], borderWidth:0 }] },
+      options: { responsive:true, plugins:{ legend:{ position:'bottom' } } }
+    });
+  }
+
+  function updateTypeChart() {
+    const typeCounts = {};
+    feedbackData.forEach(f => typeCounts[f.type] = (typeCounts[f.type] || 0) + 1);
+    const ctx = document.getElementById('typeChart').getContext('2d');
+    Chart.getChart(ctx)?.destroy();
+    new Chart(ctx, {
+      type:'bar',
+      data: { labels:Object.keys(typeCounts), datasets:[{ label:'Count', data:Object.values(typeCounts), backgroundColor:'#3498db', borderRadius:4 }] },
+      options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 } } } }
+    });
+  }
+
+  function updateFeedbackTable() {
+    const tbody = document.getElementById('feedbackTableBody');
+    tbody.innerHTML = '';
+    if(feedbackData.length===0){
+      const row = document.createElement('tr');
+      row.innerHTML = `<td colspan="6" style="text-align:center;color:#bdc3c7;padding:40px;">No feedback submitted yet.</td>`;
+      tbody.appendChild(row);
+      return;
     }
+    feedbackData.slice(0,10).forEach(f=>{
+      const row=document.createElement('tr');
+      row.innerHTML = `
+        <td>${f.name}</td>
+        <td>${f.email}</td>
+        <td>${f.type}</td>
+        <td>${'★'.repeat(f.rating)+'☆'.repeat(5-f.rating)}</td>
+        <td><span class="sentiment-badge sentiment-${f.sentiment}">${f.sentiment}</span></td>
+        <td>${f.date}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
 
-    // Export feedback data as JSON
-    function exportFeedbackData() {
-      const dataStr = JSON.stringify(feedbackData, null, 2);
-      const dataBlob = new Blob([dataStr], {type: 'application/json'});
-      const url = URL.createObjectURL(dataBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `feedback-data-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
+  updateDashboard();
 
-    // Update persistence status indicator
-    function updatePersistenceStatus() {
-      const statusEl = document.getElementById('persistenceStatus');
-      if (statusEl) {
-        if (isLocalStorageAvailable()) {
-          statusEl.textContent = '✓ Data will persist on page refresh';
-          statusEl.style.color = '#059669';
-        } else {
-          statusEl.textContent = '⚠ Data will be lost on page refresh (localStorage not available)';
-          statusEl.style.color = '#dc2626';
-        }
-      }
-    }
-
-    // Call status update when dashboard is shown
-    function showDashboard() {
-      document.getElementById('formContainer').style.display = 'none';
-      document.getElementById('dashboardContainer').classList.add('show');
+  function clearAllFeedback() {
+    if(confirm('Are you sure you want to clear all feedback data?')) {
+      feedbackData = [];
+      saveFeedbackData();
       updateDashboard();
-      updatePersistenceStatus();
     }
-  </script>
+  }
+
+  function exportFeedbackData() {
+    const dataStr = JSON.stringify(feedbackData, null, 2);
+    const blob = new Blob([dataStr], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'feedbackData.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+</script>
+
 </body>
 </html>
