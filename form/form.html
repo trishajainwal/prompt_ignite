@@ -483,6 +483,15 @@
 
     <div class="feedback-table-container">
       <h3>Recent Feedback Submissions</h3>
+      <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
+        <button type="button" onclick="clearAllFeedback()" style="padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+          Clear All Data
+        </button>
+        <button type="button" onclick="exportFeedbackData()" style="padding: 8px 16px; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+          Export Data
+        </button>
+        <span id="persistenceStatus" style="font-size: 12px; color: #6b7280;"></span>
+      </div>
       <table class="feedback-table">
         <thead>
           <tr>
@@ -503,6 +512,58 @@
   <script>
     // Start with empty feedback data - your submissions will appear here
     let feedbackData = [];
+
+    // Check if localStorage is available (works in actual websites, not in Claude artifacts)
+    function isLocalStorageAvailable() {
+      try {
+        const test = '__localStorage_test__';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Load existing feedback from localStorage (if available)
+    function loadFeedbackData() {
+      if (isLocalStorageAvailable()) {
+        const saved = localStorage.getItem('customerFeedbackData');
+        if (saved) {
+          try {
+            feedbackData = JSON.parse(saved);
+            console.log('Loaded', feedbackData.length, 'saved feedback entries');
+          } catch (e) {
+            console.error('Error loading saved feedback data:', e);
+            feedbackData = [];
+          }
+        }
+      } else {
+        // Fallback: Add some sample data to demonstrate persistence
+        // In a real website environment, this wouldn't be needed
+        feedbackData = [
+          { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
+        ];
+        console.log('localStorage not available - using demo data');
+      }
+    }
+
+    // Save feedback data to localStorage (if available)
+    function saveFeedbackData() {
+      if (isLocalStorageAvailable()) {
+        try {
+          localStorage.setItem('customerFeedbackData', JSON.stringify(feedbackData));
+          console.log('Feedback data saved to localStorage');
+        } catch (e) {
+          console.error('Error saving feedback data:', e);
+        }
+      } else {
+        console.log('localStorage not available - data will not persist on refresh');
+      }
+    }
+
+    // Initialize data on page load
+    loadFeedbackData();
 
     // Star rating functionality
     const stars = document.querySelectorAll('.star-rating input');
@@ -571,6 +632,9 @@
       // Add to feedback data
       feedbackData.unshift(newFeedback);
       
+      // Save to localStorage
+      saveFeedbackData();
+      
       // Show thank you message
       this.style.display = 'none';
       document.getElementById('thankYou').classList.add('show');
@@ -586,6 +650,7 @@
       document.getElementById('formContainer').style.display = 'none';
       document.getElementById('dashboardContainer').classList.add('show');
       updateDashboard();
+      updatePersistenceStatus();
     }
 
     function showForm() {
@@ -718,6 +783,52 @@
 
     // Initialize dashboard on load
     updateDashboard();
+
+    // Clear all feedback data
+    function clearAllFeedback() {
+      if (confirm('Are you sure you want to clear all feedback data? This action cannot be undone.')) {
+        feedbackData = [];
+        saveFeedbackData();
+        updateDashboard();
+        console.log('All feedback data cleared');
+      }
+    }
+
+    // Export feedback data as JSON
+    function exportFeedbackData() {
+      const dataStr = JSON.stringify(feedbackData, null, 2);
+      const dataBlob = new Blob([dataStr], {type: 'application/json'});
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `feedback-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    // Update persistence status indicator
+    function updatePersistenceStatus() {
+      const statusEl = document.getElementById('persistenceStatus');
+      if (statusEl) {
+        if (isLocalStorageAvailable()) {
+          statusEl.textContent = '✓ Data will persist on page refresh';
+          statusEl.style.color = '#059669';
+        } else {
+          statusEl.textContent = '⚠ Data will be lost on page refresh (localStorage not available)';
+          statusEl.style.color = '#dc2626';
+        }
+      }
+    }
+
+    // Call status update when dashboard is shown
+    function showDashboard() {
+      document.getElementById('formContainer').style.display = 'none';
+      document.getElementById('dashboardContainer').classList.add('show');
+      updateDashboard();
+      updatePersistenceStatus();
+    }
   </script>
 </body>
 </html>
