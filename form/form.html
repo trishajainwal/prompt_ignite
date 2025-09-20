@@ -808,280 +808,350 @@
   </div>
 
 <script>
-  // Start with empty feedback data
-  let feedbackData = [];
+// Backend-integrated JavaScript - Replace your current script section with this
+let feedbackData = [];
+const BACKEND_URL = 'http://localhost:5000';
 
-  // Use in-memory storage instead of localStorage for Claude.ai compatibility
-  function loadFeedbackData() {
-    // Initialize with sample data for demonstration
+// Load feedback data from backend
+async function loadFeedbackData() {
+  try {
+    const response = await fetch(`${BACKEND_URL}/feedback`);
+    if (response.ok) {
+      feedbackData = await response.json();
+      console.log('Loaded', feedbackData.length, 'feedback entries from server');
+    } else {
+      console.error('Failed to load feedback from server');
+      feedbackData = [];
+    }
+  } catch (error) {
+    console.error('Error connecting to server:', error);
+    // Add demo data for offline testing
     feedbackData = [
       { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
     ];
   }
+}
 
-  // Save feedback data (in-memory only)
-  function saveFeedbackData() {
-    // Data persists only during the current session
-    console.log('Feedback data saved to memory:', feedbackData.length, 'entries');
-  }
+// Initialize data on page load
+loadFeedbackData();
 
-  loadFeedbackData();
+// Navigation functions
+function showCover() {
+  document.getElementById('coverContainer').style.display = 'flex';
+  document.getElementById('formContainer').classList.remove('show');
+  document.getElementById('dashboardContainer').classList.remove('show');
 
-  // Navigation
-  function showCover() {
-    document.getElementById('coverContainer').style.display = 'flex';
-    document.getElementById('formContainer').classList.remove('show');
-    document.getElementById('dashboardContainer').classList.remove('show');
+  const form = document.getElementById('feedbackForm');
+  const thankYou = document.getElementById('thankYou');
+  form.style.display = 'block';
+  thankYou.classList.remove('show');
+  form.reset();
+  document.getElementById('ratingText').textContent = 'Click to rate';
+  updateStars(0);
+}
 
-    const form = document.getElementById('feedbackForm');
-    const thankYou = document.getElementById('thankYou');
-    form.style.display = 'block';
-    thankYou.classList.remove('show');
-    form.reset();
-    document.getElementById('ratingText').textContent = 'Click to rate';
-    updateStars(0);
-  }
+function showFeedbackForm() {
+  document.getElementById('coverContainer').style.display = 'none';
+  document.getElementById('formContainer').classList.add('show');
+  document.getElementById('dashboardContainer').classList.remove('show');
+}
 
-  function showFeedbackForm() {
-    document.getElementById('coverContainer').style.display = 'none';
-    document.getElementById('formContainer').classList.add('show');
-    document.getElementById('dashboardContainer').classList.remove('show');
-  }
+async function showAdminDashboard() {
+  document.getElementById('coverContainer').style.display = 'none';
+  document.getElementById('formContainer').classList.remove('show');
+  document.getElementById('dashboardContainer').classList.add('show');
+  
+  // Fetch fresh data from backend
+  await loadFeedbackData();
+  updateDashboard();
+  updateConnectionStatus();
+}
 
-  function showAdminDashboard() {
-    document.getElementById('coverContainer').style.display = 'none';
-    document.getElementById('formContainer').classList.remove('show');
-    document.getElementById('dashboardContainer').classList.add('show');
-    updateDashboard();
-  }
+// Star rating functionality
+const stars = document.querySelectorAll('.star-rating input');
+const starLabels = document.querySelectorAll('.star-rating label');
+const ratingText = document.getElementById('ratingText');
 
-  // Star rating
-  const stars = document.querySelectorAll('.star-rating input');
-  const starLabels = document.querySelectorAll('.star-rating label');
-  const ratingText = document.getElementById('ratingText');
+const ratingTexts = {
+  '1': 'Poor',
+  '2': 'Fair',
+  '3': 'Good',
+  '4': 'Very Good',
+  '5': 'Excellent'
+};
 
-  const ratingTexts = {
-    '1': 'Poor',
-    '2': 'Fair',
-    '3': 'Good',
-    '4': 'Very Good',
-    '5': 'Excellent'
+stars.forEach((star, index) => {
+  star.addEventListener('change', (e) => {
+    const rating = parseInt(e.target.value);
+    updateStars(rating);
+    ratingText.textContent = ratingTexts[rating];
+    ratingText.classList.add('show');
+  });
+});
+
+starLabels.forEach((label, index) => {
+  label.addEventListener('mouseenter', () => {
+    updateStars(index + 1);
+  });
+});
+
+document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+  const checkedStar = document.querySelector('.star-rating input:checked');
+  updateStars(checkedStar ? parseInt(checkedStar.value) : 0);
+});
+
+function updateStars(rating) {
+  starLabels.forEach((label, index) => {
+    label.style.color = index < rating ? '#ffc107' : '#e1f5fe';
+  });
+}
+
+// Form submission with backend integration
+document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  const newFeedback = {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    product: formData.get('product') || '', // This matches your backend
+    type: formData.get('type'),
+    rating: parseInt(formData.get('rating')),
+    message: formData.get('message'),
+    date: new Date().toISOString().split('T')[0],
+    sentiment: getSentiment(parseInt(formData.get('rating')))
   };
 
-  stars.forEach((star, index) => {
-    star.addEventListener('change', (e) => {
-      const rating = parseInt(e.target.value);
-      updateStars(rating);
-      ratingText.textContent = ratingTexts[rating];
-      ratingText.classList.add('show');
-    });
-  });
+  try {
+    // Show loading state
+    const submitBtn = this.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
 
-  starLabels.forEach((label, index) => {
-    label.addEventListener('mouseenter', () => {
-      updateStars(index + 1);
-    });
-  });
-
-  document.querySelector('.star-rating').addEventListener('mouseleave', () => {
-    const checkedStar = document.querySelector('.star-rating input:checked');
-    updateStars(checkedStar ? parseInt(checkedStar.value) : 0);
-  });
-
-  function updateStars(rating) {
-    starLabels.forEach((label, index) => {
-      label.style.color = index < rating ? '#ffc107' : '#e1f5fe';
-    });
-  }
-
-  // Form submission
-  document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
-    const newFeedback = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      type: formData.get('type'),
-      rating: parseInt(formData.get('rating')),
-      message: formData.get('message'),
-      date: new Date().toISOString().split('T')[0],
-      sentiment: getSentiment(parseInt(formData.get('rating')))
-    };
-    feedbackData.unshift(newFeedback);
-    saveFeedbackData();
-    this.style.display = 'none';
-    document.getElementById('thankYou').classList.add('show');
-  });
-
-  function getSentiment(rating) {
-    if (rating >= 4) return 'positive';
-    if (rating <= 2) return 'negative';
-    return 'neutral';
-  }
-
-  function updateDashboard() {
-    const total = feedbackData.length;
-    const positive = feedbackData.filter(f => f.sentiment === 'positive').length;
-    const negative = feedbackData.filter(f => f.sentiment === 'negative').length;
-    const neutral = feedbackData.filter(f => f.sentiment === 'neutral').length;
-
-    document.getElementById('totalFeedback').textContent = total;
-    document.getElementById('positiveFeedback').textContent = positive;
-    document.getElementById('negativeFeedback').textContent = negative;
-    document.getElementById('neutralFeedback').textContent = neutral;
-
-    updateSentimentChart(positive, negative, neutral);
-    updateTypeChart();
-    updateFeedbackTable();
-  }
-
-  function updateSentimentChart(positive, negative, neutral) {
-    const ctx = document.getElementById('sentimentChart').getContext('2d');
-    Chart.getChart(ctx)?.destroy();
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: { 
-        labels: ['Positive','Negative','Neutral'], 
-        datasets: [{ 
-          data: [positive, negative, neutral], 
-          backgroundColor: ['#26c6da','#ef5350','#ffa726'], 
-          borderWidth: 0,
-          borderRadius: 8
-        }] 
+    // Send to backend
+    const response = await fetch(`${BACKEND_URL}/feedback`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
-      options: { 
-        responsive: true, 
-        plugins: { 
-          legend: { 
-            position: 'bottom',
-            labels: {
-              usePointStyle: true,
-              padding: 20,
-              font: {
-                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-                size: 12,
-                weight: '600'
-              },
-              color: '#37474f'
-            }
-          }
-        } 
-      }
+      body: JSON.stringify(newFeedback)
     });
-  }
 
-  function updateTypeChart() {
-    const typeCounts = {};
-    feedbackData.forEach(f => typeCounts[f.type] = (typeCounts[f.type] || 0) + 1);
-    const ctx = document.getElementById('typeChart').getContext('2d');
-    Chart.getChart(ctx)?.destroy();
-    new Chart(ctx, {
-      type: 'bar',
-      data: { 
-        labels: Object.keys(typeCounts), 
-        datasets: [{ 
-          label: 'Count', 
-          data: Object.values(typeCounts), 
-          backgroundColor: '#42a5f5', 
-          borderRadius: 8,
-          borderSkipped: false
-        }] 
-      },
-      options: { 
-        responsive: true, 
-        plugins: { 
-          legend: { 
-            display: false 
-          } 
-        }, 
-        scales: { 
-          y: { 
-            beginAtZero: true, 
-            ticks: { 
-              stepSize: 1,
-              color: '#546e7a',
-              font: {
-                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-                size: 11,
-                weight: '500'
-              }
+    const result = await response.json();
+
+    if (response.ok && result.status === 'success') {
+      console.log('Feedback saved successfully:', result);
+      
+      // Add to local array for immediate UI update
+      feedbackData.unshift(newFeedback);
+      
+      // Show thank you message
+      this.style.display = 'none';
+      document.getElementById('thankYou').classList.add('show');
+      
+    } else {
+      throw new Error(result.message || 'Failed to save feedback');
+    }
+
+  } catch (error) {
+    console.error('Error saving feedback:', error);
+    alert('Failed to submit feedback. Please try again. Error: ' + error.message);
+  } finally {
+    // Reset button state
+    const submitBtn = this.querySelector('.submit-btn');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+});
+
+function getSentiment(rating) {
+  if (rating >= 4) return 'positive';
+  if (rating <= 2) return 'negative';
+  return 'neutral';
+}
+
+function updateDashboard() {
+  const total = feedbackData.length;
+  const positive = feedbackData.filter(f => f.sentiment === 'positive').length;
+  const negative = feedbackData.filter(f => f.sentiment === 'negative').length;
+  const neutral = feedbackData.filter(f => f.sentiment === 'neutral').length;
+
+  document.getElementById('totalFeedback').textContent = total;
+  document.getElementById('positiveFeedback').textContent = positive;
+  document.getElementById('negativeFeedback').textContent = negative;
+  document.getElementById('neutralFeedback').textContent = neutral;
+
+  updateSentimentChart(positive, negative, neutral);
+  updateTypeChart();
+  updateFeedbackTable();
+}
+
+function updateSentimentChart(positive, negative, neutral) {
+  const ctx = document.getElementById('sentimentChart').getContext('2d');
+  Chart.getChart(ctx)?.destroy();
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: { 
+      labels: ['Positive','Negative','Neutral'], 
+      datasets: [{ 
+        data: [positive, negative, neutral], 
+        backgroundColor: ['#26c6da','#ef5350','#ffa726'], 
+        borderWidth: 0,
+        borderRadius: 8
+      }] 
+    },
+    options: { 
+      responsive: true, 
+      plugins: { 
+        legend: { 
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+            font: {
+              family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+              size: 12,
+              weight: '600'
             },
-            grid: {
-              color: '#e3f2fd'
+            color: '#37474f'
+          }
+        }
+      } 
+    }
+  });
+}
+
+function updateTypeChart() {
+  const typeCounts = {};
+  feedbackData.forEach(f => typeCounts[f.type] = (typeCounts[f.type] || 0) + 1);
+  const ctx = document.getElementById('typeChart').getContext('2d');
+  Chart.getChart(ctx)?.destroy();
+  new Chart(ctx, {
+    type: 'bar',
+    data: { 
+      labels: Object.keys(typeCounts), 
+      datasets: [{ 
+        label: 'Count', 
+        data: Object.values(typeCounts), 
+        backgroundColor: '#42a5f5', 
+        borderRadius: 8,
+        borderSkipped: false
+      }] 
+    },
+    options: { 
+      responsive: true, 
+      plugins: { 
+        legend: { 
+          display: false 
+        } 
+      }, 
+      scales: { 
+        y: { 
+          beginAtZero: true, 
+          ticks: { 
+            stepSize: 1,
+            color: '#546e7a',
+            font: {
+              family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+              size: 11,
+              weight: '500'
             }
           },
-          x: {
-            ticks: {
-              color: '#546e7a',
-              font: {
-                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
-                size: 11,
-                weight: '500'
-              }
-            },
-            grid: {
-              display: false
-            }
+          grid: {
+            color: '#e3f2fd'
           }
-        } 
+        },
+        x: {
+          ticks: {
+            color: '#546e7a',
+            font: {
+              family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+              size: 11,
+              weight: '500'
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      } 
+    }
+  });
+}
+
+function updateFeedbackTable() {
+  const tbody = document.getElementById('feedbackTableBody');
+  tbody.innerHTML = '';
+  if(feedbackData.length === 0){
+    const row = document.createElement('tr');
+    row.innerHTML = `<td colspan="6" style="text-align:center;color:#90a4ae;padding:40px;font-style:italic;">No feedback submitted yet.</td>`;
+    tbody.appendChild(row);
+    return;
+  }
+  feedbackData.slice(0,10).forEach(f => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${f.name}</td>
+      <td>${f.email}</td>
+      <td style="text-transform: capitalize;">${f.type}</td>
+      <td style="color: #ffc107; font-size: 16px;">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</td>
+      <td><span class="sentiment-badge sentiment-${f.sentiment}">${f.sentiment}</span></td>
+      <td>${f.date}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+async function clearAllFeedback() {
+  if(confirm('Are you sure you want to clear all feedback data? This action cannot be undone.')) {
+    feedbackData = [];
+    updateDashboard();
+    console.log('All feedback data cleared from display');
+  }
+}
+
+function exportFeedbackData() {
+  if (feedbackData.length === 0) {
+    alert('No feedback data to export.');
+    return;
+  }
+  
+  const dataStr = JSON.stringify(feedbackData, null, 2);
+  const blob = new Blob([dataStr], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `feedback_data_${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// Connection status indicator
+async function updateConnectionStatus() {
+  const statusEl = document.getElementById('persistenceStatus');
+  if (statusEl) {
+    try {
+      const response = await fetch(`${BACKEND_URL}/health`);
+      if (response.ok) {
+        statusEl.textContent = '✓ Connected to server - Data is persistent';
+        statusEl.style.color = '#26c6da';
+      } else {
+        statusEl.textContent = '⚠ Server connection issues';
+        statusEl.style.color = '#ef5350';
       }
-    });
-  }
-
-  function updateFeedbackTable() {
-    const tbody = document.getElementById('feedbackTableBody');
-    tbody.innerHTML = '';
-    if(feedbackData.length === 0){
-      const row = document.createElement('tr');
-      row.innerHTML = `<td colspan="6" style="text-align:center;color:#90a4ae;padding:40px;font-style:italic;">No feedback submitted yet.</td>`;
-      tbody.appendChild(row);
-      return;
-    }
-    feedbackData.slice(0,10).forEach(f => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${f.name}</td>
-        <td>${f.email}</td>
-        <td style="text-transform: capitalize;">${f.type}</td>
-        <td style="color: #ffc107; font-size: 16px;">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</td>
-        <td><span class="sentiment-badge sentiment-${f.sentiment}">${f.sentiment}</span></td>
-        <td>${f.date}</td>
-      `;
-      tbody.appendChild(row);
-    });
-  }
-
-  updateDashboard();
-
-  function clearAllFeedback() {
-    if(confirm('Are you sure you want to clear all feedback data? This action cannot be undone.')) {
-      feedbackData = [];
-      saveFeedbackData();
-      updateDashboard();
+    } catch (error) {
+      statusEl.textContent = '⚠ Server offline - Using demo data';
+      statusEl.style.color = '#ef5350';
     }
   }
+}
 
-  function exportFeedbackData() {
-    if (feedbackData.length === 0) {
-      alert('No feedback data to export.');
-      return;
-    }
-    
-    const dataStr = JSON.stringify(feedbackData, null, 2);
-    const blob = new Blob([dataStr], {type: "application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `feedback_data_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  // Update persistence status
-  document.getElementById('persistenceStatus').textContent = 'Data stored in memory for current session only';
+// Initialize dashboard
+updateDashboard();
 </script>
-
 </body>
 </html>
