@@ -14,7 +14,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #fafafa;
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
       min-height: 100vh;
       line-height: 1.6;
     }
@@ -25,7 +25,6 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       padding: 20px;
     }
 
@@ -37,86 +36,117 @@
 
     .cover-header {
       margin-bottom: 48px;
-      color: white;
+      color: #1565c0;
     }
 
     .cover-header h1 {
       font-size: 42px;
       font-weight: 700;
       margin-bottom: 16px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      text-shadow: 0 2px 8px rgba(21, 101, 192, 0.3);
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .cover-header p {
       font-size: 18px;
-      opacity: 0.9;
+      color: #1976d2;
       line-height: 1.6;
+      font-weight: 400;
     }
 
     .options-container {
       display: grid;
-      gap: 20px;
+      gap: 24px;
       margin-bottom: 32px;
     }
 
     .option-card {
-      background: white;
-      padding: 32px 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 36px 28px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(21, 101, 192, 0.15);
       cursor: pointer;
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
     }
 
     .option-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-color: #667eea;
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(21, 101, 192, 0.25);
+      border-color: #42a5f5;
+    }
+
+    .option-card:hover::before {
+      left: 100%;
     }
 
     .option-card .icon {
-      font-size: 48px;
-      margin-bottom: 16px;
+      font-size: 52px;
+      margin-bottom: 20px;
       display: block;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
     }
 
     .feedback-option .icon {
-      color: #059669;
+      background: linear-gradient(135deg, #42a5f5, #1976d2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .dashboard-option .icon {
-      color: #3b82f6;
+      background: linear-gradient(135deg, #26c6da, #0097a7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .option-card h3 {
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 600;
-      color: #111827;
-      margin-bottom: 8px;
+      color: #1565c0;
+      margin-bottom: 12px;
     }
 
     .option-card p {
-      color: #6b7280;
-      font-size: 15px;
+      color: #546e7a;
+      font-size: 16px;
       line-height: 1.5;
     }
 
     .cover-footer {
-      color: white;
-      opacity: 0.8;
+      color: #1976d2;
       font-size: 14px;
+      font-weight: 500;
     }
 
     /* Form Container */
     .form-container {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
       padding: 48px 40px;
-      border-radius: 8px;
+      border-radius: 24px;
       width: 100%;
-      max-width: 480px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e5e7eb;
+      max-width: 520px;
+      box-shadow: 0 20px 60px rgba(21, 101, 192, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       margin: 20px auto;
       display: none;
     }
@@ -127,18 +157,19 @@
 
     .form-header {
       margin-bottom: 32px;
+      text-align: center;
     }
 
     .form-header h2 {
-      color: #111827;
-      font-size: 24px;
+      color: #1565c0;
+      font-size: 28px;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
 
     .form-header p {
-      color: #6b7280;
-      font-size: 15px;
+      color: #546e7a;
+      font-size: 16px;
       font-weight: 400;
     }
 
@@ -148,47 +179,51 @@
 
     .form-group label {
       display: block;
-      color: #374151;
-      font-weight: 500;
-      margin-bottom: 6px;
-      font-size: 14px;
+      color: #1976d2;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 15px;
     }
 
     .form-group input,
     .form-group select,
     .form-group textarea {
       width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 15px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-      background: #ffffff;
+      padding: 16px 20px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
       outline: none;
       font-family: inherit;
+      color: #37474f;
     }
 
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: #42a5f5;
+      box-shadow: 0 0 0 4px rgba(66, 165, 245, 0.15);
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
     }
 
     .form-group textarea {
       resize: vertical;
-      min-height: 96px;
+      min-height: 120px;
     }
 
     /* Star Rating */
     .rating-container {
-      margin-top: 6px;
+      margin-top: 8px;
     }
 
     .star-rating {
       display: flex;
-      gap: 4px;
-      margin-bottom: 4px;
+      gap: 8px;
+      margin-bottom: 8px;
+      justify-content: center;
     }
 
     .star-rating input {
@@ -196,25 +231,32 @@
     }
 
     .star-rating label {
-      font-size: 24px;
-      color: #e5e7eb;
+      font-size: 32px;
+      color: #e1f5fe;
       cursor: pointer;
-      transition: color 0.15s ease;
+      transition: all 0.3s ease;
       display: block;
       width: auto;
       margin: 0;
-      padding: 4px;
+      padding: 8px;
       user-select: none;
+      border-radius: 50%;
+    }
+
+    .star-rating label:hover {
+      transform: scale(1.2);
+      text-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
     }
 
     .rating-text {
-      font-size: 13px;
-      color: #6b7280;
-      margin-top: 4px;
-      margin-bottom: 8px;
+      font-size: 14px;
+      color: #546e7a;
+      margin-top: 8px;
       opacity: 0;
-      transition: opacity 0.2s ease;
-      min-height: 18px;
+      transition: opacity 0.3s ease;
+      min-height: 20px;
+      text-align: center;
+      font-weight: 500;
     }
 
     .rating-text.show {
@@ -224,8 +266,8 @@
     /* Select dropdown styling */
     .form-group select {
       cursor: pointer;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-      background-position: right 12px center;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2342a5f5' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 16px center;
       background-repeat: no-repeat;
       background-size: 16px;
       appearance: none;
@@ -234,75 +276,91 @@
     /* Buttons */
     .submit-btn, .dashboard-btn, .back-btn {
       width: 100%;
-      padding: 12px 24px;
+      padding: 16px 24px;
       border: none;
-      border-radius: 6px;
-      font-size: 15px;
-      font-weight: 500;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.1s ease;
+      transition: all 0.3s ease;
       font-family: inherit;
       margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
     }
 
     .submit-btn {
-      background: #111827;
-      color: #ffffff;
+      background: linear-gradient(135deg, #1976d2, #42a5f5);
+      color: white;
+      box-shadow: 0 8px 24px rgba(25, 118, 210, 0.3);
     }
 
     .submit-btn:hover {
-      background: #1f2937;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(25, 118, 210, 0.4);
     }
 
     .dashboard-btn {
-      background: #3b82f6;
-      color: #ffffff;
+      background: linear-gradient(135deg, #26c6da, #00acc1);
+      color: white;
+      box-shadow: 0 8px 24px rgba(38, 198, 218, 0.3);
     }
 
     .dashboard-btn:hover {
-      background: #2563eb;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(38, 198, 218, 0.4);
     }
 
     .back-btn {
-      background: #6b7280;
-      color: #ffffff;
+      background: linear-gradient(135deg, #90a4ae, #607d8b);
+      color: white;
+      box-shadow: 0 8px 24px rgba(144, 164, 174, 0.3);
     }
 
     .back-btn:hover {
-      background: #4b5563;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(144, 164, 174, 0.4);
     }
 
     .submit-btn:active, .dashboard-btn:active, .back-btn:active {
-      transform: translateY(1px);
+      transform: translateY(-1px);
     }
 
     /* Thank You Page */
     .thank-you {
       text-align: center;
       display: none;
-      animation: fadeIn 0.3s ease;
+      animation: fadeInUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .thank-you.show {
       display: block;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+      }
     }
 
     .thank-you h3 {
-      color: #059669;
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      color: #26c6da;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 4px rgba(38, 198, 218, 0.3);
     }
 
     .thank-you p {
-      color: #6b7280;
-      font-size: 15px;
-      margin-bottom: 24px;
+      color: #546e7a;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.6;
     }
 
     /* Dashboard Styles */
@@ -320,136 +378,231 @@
     .dashboard-header {
       text-align: center;
       margin-bottom: 40px;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 32px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(21, 101, 192, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .dashboard-header h2 {
-      color: #111827;
-      font-size: 28px;
-      font-weight: 600;
-      margin-bottom: 8px;
+      color: #1565c0;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #1565c0, #42a5f5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-header p {
+      color: #546e7a;
+      font-size: 16px;
+      margin-bottom: 24px;
     }
 
     .dashboard-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
       margin-bottom: 40px;
     }
 
     .stat-card {
-      background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 32px 24px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(21, 101, 192, 0.15);
       text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
     }
 
     .stat-card h3 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 12px;
     }
 
     .stat-card p {
-      color: #6b7280;
+      color: #546e7a;
       font-size: 14px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
+      font-weight: 600;
     }
 
-    .total { color: #3b82f6; }
-    .positive { color: #059669; }
-    .negative { color: #dc2626; }
-    .neutral { color: #d97706; }
+    .total { 
+      background: linear-gradient(135deg, #42a5f5, #1976d2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .positive { 
+      background: linear-gradient(135deg, #26c6da, #00acc1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .negative { 
+      background: linear-gradient(135deg, #ef5350, #d32f2f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .neutral { 
+      background: linear-gradient(135deg, #ffa726, #f57c00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
     .dashboard-charts {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      gap: 24px;
       margin-bottom: 40px;
     }
 
     .chart-container {
-      background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(21, 101, 192, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .chart-container h3 {
-      color: #111827;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      color: #1565c0;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
       text-align: center;
     }
 
     .feedback-table-container {
-      background: white;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(15px);
+      padding: 32px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(21, 101, 192, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .feedback-table-container h3 {
-      color: #111827;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
+      color: #1565c0;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
     }
 
     .feedback-table {
       width: 100%;
       border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     .feedback-table th,
     .feedback-table td {
-      padding: 12px;
+      padding: 16px 12px;
       text-align: left;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e3f2fd;
     }
 
     .feedback-table th {
-      background: #f9fafb;
-      font-weight: 600;
-      color: #374151;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      font-weight: 700;
+      color: #1565c0;
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 1px;
     }
 
     .feedback-table td {
-      color: #6b7280;
-    }
-
-    .sentiment-badge {
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
+      color: #37474f;
       font-weight: 500;
     }
 
+    .sentiment-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .sentiment-positive {
-      background: #d1fae5;
-      color: #065f46;
+      background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+      color: #2e7d32;
     }
 
     .sentiment-negative {
-      background: #fee2e2;
-      color: #991b1b;
+      background: linear-gradient(135deg, #ffcdd2, #ef9a9a);
+      color: #c62828;
     }
 
     .sentiment-neutral {
-      background: #fef3c7;
-      color: #92400e;
+      background: linear-gradient(135deg, #ffe0b2, #ffcc02);
+      color: #ef6c00;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .clear-btn {
+      background: linear-gradient(135deg, #ef5350, #d32f2f);
+      color: white;
+      box-shadow: 0 4px 16px rgba(239, 83, 80, 0.3);
+    }
+
+    .clear-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(239, 83, 80, 0.4);
+    }
+
+    .export-btn {
+      background: linear-gradient(135deg, #26c6da, #00acc1);
+      color: white;
+      box-shadow: 0 4px 16px rgba(38, 198, 218, 0.3);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(38, 198, 218, 0.4);
     }
 
     /* Responsive */
     @media (max-width: 768px) {
       .cover-header h1 {
-        font-size: 32px;
+        font-size: 36px;
       }
       
       .cover-header p {
@@ -463,6 +616,7 @@
       .form-container {
         padding: 32px 24px;
         margin: 16px;
+        border-radius: 20px;
       }
 
       .dashboard-container {
@@ -471,6 +625,19 @@
 
       .feedback-table {
         font-size: 14px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+
+      .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
@@ -614,14 +781,14 @@
 
     <div class="feedback-table-container">
       <h3>Recent Feedback Submissions</h3>
-      <div style="margin-bottom: 16px; display: flex; gap: 12px; align-items: center;">
-        <button type="button" onclick="clearAllFeedback()" style="padding: 8px 16px; background: #dc2626; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+      <div class="action-buttons">
+        <button type="button" class="action-btn clear-btn" onclick="clearAllFeedback()">
           Clear All Data
         </button>
-        <button type="button" onclick="exportFeedbackData()" style="padding: 8px 16px; background: #059669; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
+        <button type="button" class="action-btn export-btn" onclick="exportFeedbackData()">
           Export Data
         </button>
-        <span id="persistenceStatus" style="font-size: 12px; color: #6b7280;"></span>
+        <span id="persistenceStatus" style="font-size: 12px; color: #546e7a; font-weight: 500;"></span>
       </div>
       <table class="feedback-table">
         <thead>
@@ -644,46 +811,18 @@
   // Start with empty feedback data
   let feedbackData = [];
 
-  // Check if localStorage is available
-  function isLocalStorageAvailable() {
-    try {
-      const test = '__localStorage_test__';
-      localStorage.setItem(test, test);
-      localStorage.removeItem(test);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Load existing feedback from localStorage
+  // Use in-memory storage instead of localStorage for Claude.ai compatibility
   function loadFeedbackData() {
-    if (isLocalStorageAvailable()) {
-      const saved = localStorage.getItem('customerFeedbackData');
-      if (saved) {
-        try {
-          feedbackData = JSON.parse(saved);
-        } catch (e) {
-          console.error('Error loading saved feedback data:', e);
-          feedbackData = [];
-        }
-      }
-    } else {
-      feedbackData = [
-        { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
-      ];
-    }
+    // Initialize with sample data for demonstration
+    feedbackData = [
+      { name: "Demo User", email: "demo@example.com", type: "feedback", rating: 4, message: "This is a sample feedback entry", date: "2024-09-19", sentiment: "positive" }
+    ];
   }
 
-  // Save feedback data to localStorage
+  // Save feedback data (in-memory only)
   function saveFeedbackData() {
-    if (isLocalStorageAvailable()) {
-      try {
-        localStorage.setItem('customerFeedbackData', JSON.stringify(feedbackData));
-      } catch (e) {
-        console.error('Error saving feedback data:', e);
-      }
-    }
+    // Data persists only during the current session
+    console.log('Feedback data saved to memory:', feedbackData.length, 'entries');
   }
 
   loadFeedbackData();
@@ -751,7 +890,7 @@
 
   function updateStars(rating) {
     starLabels.forEach((label, index) => {
-      label.style.color = index < rating ? '#f39c12' : '#e1e8ed';
+      label.style.color = index < rating ? '#ffc107' : '#e1f5fe';
     });
   }
 
@@ -801,8 +940,33 @@
     Chart.getChart(ctx)?.destroy();
     new Chart(ctx, {
       type: 'doughnut',
-      data: { labels: ['Positive','Negative','Neutral'], datasets: [{ data: [positive, negative, neutral], backgroundColor: ['#27ae60','#e74c3c','#f39c12'], borderWidth:0 }] },
-      options: { responsive:true, plugins:{ legend:{ position:'bottom' } } }
+      data: { 
+        labels: ['Positive','Negative','Neutral'], 
+        datasets: [{ 
+          data: [positive, negative, neutral], 
+          backgroundColor: ['#26c6da','#ef5350','#ffa726'], 
+          borderWidth: 0,
+          borderRadius: 8
+        }] 
+      },
+      options: { 
+        responsive: true, 
+        plugins: { 
+          legend: { 
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: {
+                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+                size: 12,
+                weight: '600'
+              },
+              color: '#37474f'
+            }
+          }
+        } 
+      }
     });
   }
 
@@ -812,28 +976,74 @@
     const ctx = document.getElementById('typeChart').getContext('2d');
     Chart.getChart(ctx)?.destroy();
     new Chart(ctx, {
-      type:'bar',
-      data: { labels:Object.keys(typeCounts), datasets:[{ label:'Count', data:Object.values(typeCounts), backgroundColor:'#3498db', borderRadius:4 }] },
-      options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1 } } } }
+      type: 'bar',
+      data: { 
+        labels: Object.keys(typeCounts), 
+        datasets: [{ 
+          label: 'Count', 
+          data: Object.values(typeCounts), 
+          backgroundColor: '#42a5f5', 
+          borderRadius: 8,
+          borderSkipped: false
+        }] 
+      },
+      options: { 
+        responsive: true, 
+        plugins: { 
+          legend: { 
+            display: false 
+          } 
+        }, 
+        scales: { 
+          y: { 
+            beginAtZero: true, 
+            ticks: { 
+              stepSize: 1,
+              color: '#546e7a',
+              font: {
+                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+                size: 11,
+                weight: '500'
+              }
+            },
+            grid: {
+              color: '#e3f2fd'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#546e7a',
+              font: {
+                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto',
+                size: 11,
+                weight: '500'
+              }
+            },
+            grid: {
+              display: false
+            }
+          }
+        } 
+      }
     });
   }
 
   function updateFeedbackTable() {
     const tbody = document.getElementById('feedbackTableBody');
     tbody.innerHTML = '';
-    if(feedbackData.length===0){
+    if(feedbackData.length === 0){
       const row = document.createElement('tr');
-      row.innerHTML = `<td colspan="6" style="text-align:center;color:#bdc3c7;padding:40px;">No feedback submitted yet.</td>`;
+      row.innerHTML = `<td colspan="6" style="text-align:center;color:#90a4ae;padding:40px;font-style:italic;">No feedback submitted yet.</td>`;
       tbody.appendChild(row);
       return;
     }
-    feedbackData.slice(0,10).forEach(f=>{
-      const row=document.createElement('tr');
+    feedbackData.slice(0,10).forEach(f => {
+      const row = document.createElement('tr');
       row.innerHTML = `
         <td>${f.name}</td>
         <td>${f.email}</td>
-        <td>${f.type}</td>
-        <td>${'★'.repeat(f.rating)+'☆'.repeat(5-f.rating)}</td>
+        <td style="text-transform: capitalize;">${f.type}</td>
+        <td style="color: #ffc107; font-size: 16px;">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</td>
         <td><span class="sentiment-badge sentiment-${f.sentiment}">${f.sentiment}</span></td>
         <td>${f.date}</td>
       `;
@@ -844,7 +1054,7 @@
   updateDashboard();
 
   function clearAllFeedback() {
-    if(confirm('Are you sure you want to clear all feedback data?')) {
+    if(confirm('Are you sure you want to clear all feedback data? This action cannot be undone.')) {
       feedbackData = [];
       saveFeedbackData();
       updateDashboard();
@@ -852,15 +1062,25 @@
   }
 
   function exportFeedbackData() {
+    if (feedbackData.length === 0) {
+      alert('No feedback data to export.');
+      return;
+    }
+    
     const dataStr = JSON.stringify(feedbackData, null, 2);
     const blob = new Blob([dataStr], {type: "application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'feedbackData.json';
+    a.download = `feedback_data_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+  // Update persistence status
+  document.getElementById('persistenceStatus').textContent = 'Data stored in memory for current session only';
 </script>
 
 </body>
